@@ -1,14 +1,15 @@
+import os
 from urllib.parse import urlencode
 import requests
 
 
-def make_folder(folder_name):
+def make_folder(folder_name: str):
     # создаем папку для бэкапа
     url = f"https://cloud-api.yandex.net/v1/disk/resources?path=%2F{folder_name}"
-    headers = {"Authorization": "TOKEN"}
+    headers = {"Authorization": "AgAAAAABi8gVAADLW0CcC5xw1U7EgXu1aWgdbB8"}
     response = requests.put(url, headers=headers)
     if response.status_code == 201:
-        print(f'Папка {folder_name} успещно создана')
+        print(f'Папка {folder_name} успешно создана')
     elif response.status_code == 409:
         print(f'Папка {folder_name} уже существует')
     else:
@@ -19,7 +20,7 @@ def make_folder(folder_name):
 def upload_photos(path: str, list_of_photos: list):
     check_url = f"https://cloud-api.yandex.net/v1/disk/resources"
     put_url = f"https://cloud-api.yandex.net/v1/disk/resources/upload"
-    headers = {"Authorization": "TOKEN"}
+    headers = {"Authorization": "AgAAAAABi8gVAADLW0CcC5xw1U7EgXu1aWgdbB8"}
     # загрузка json файла
     upload_json_get_url = f"https://cloud-api.yandex.net/v1/disk/resources/upload"
     params = {"path": f'/{path}/downloaded.json'}
@@ -27,6 +28,8 @@ def upload_photos(path: str, list_of_photos: list):
     with open("downloaded_photos.json", "rb") as file:
         requests.put(upload_json_put_response.json()["href"], files={"file": file})
     print(f"downloaded_photos.json успешно загружен")
+    os.remove("downloaded_photos.json")
+    print(f"downloaded_photos.json удален")
     for files in list_of_photos:
         # проверка наличия файла в папке
         params = {"path": f'/{path}/{files["likes"]}'}
